@@ -21,6 +21,7 @@ func main() {
 		fmt.Println("errror")
 	}
 	wg := sync.WaitGroup{}
+	//just the two of us
 	wg.Add(1)
 	go lg(logger, "1", &wg)
 	time.Sleep(2 * time.Second)
