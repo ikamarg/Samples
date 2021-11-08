@@ -11,17 +11,30 @@ func goru(l *irlog.LogType) {
 }
 
 func main() {
-	logger := irlog.LogType{}
-	bufferSize := 100000
-	fileSize := 1000000
-	level := 2
-	defer logger.ShutDown()
-	logger.InitializeLogger("Logs/log.txt", fileSize, level, "LogArchive/", 0, bufferSize)
-	for i := 0; i < 10; i++ {
-		logger.Log("buffer writed succskgvldfg", 1)
+	bufferSize := 1000
+	fileSize := 10000
+
+	asyncLogger := irlog.LogType{}
+	defer asyncLogger.ShutDown()
+	asyncLogger.InitializeLogger("Logs/asyncLog.txt", fileSize, irlog.AsynchronousLogLevel, "AsynchronousLogArchive/", irlog.AsynchronousLog, bufferSize)
+
+	syncLogger := irlog.LogType{}
+	defer syncLogger.ShutDown()
+	syncLogger.InitializeLogger("Logs/syncLog.txt", fileSize, irlog.SynchronousLogLevel, "SynchronousLogArchive/", irlog.SynchronousLog, bufferSize)
+
+	for i := 0; i < 100; i++ {
+		asyncLogger.Log("This Is Production Log For Debug", irlog.Debug)
+		asyncLogger.Log("This Is Production Log For Info", irlog.Info)
+		asyncLogger.Log("This Is Production Log For Warning", irlog.Warning)
+		asyncLogger.Log("This Is Production Log For Error", irlog.Error)
+		asyncLogger.Log("This Is Production Log For Fatal", irlog.Fatal)
 	}
 
-	for i := 0; i < 10; i++ {
-		logger.Log("25555555555", 1)
+	for i := 0; i < 100; i++ {
+		syncLogger.Log("This Is Developement Log For Debug", irlog.Debug)
+		syncLogger.Log("This Is Developement Log For Info", irlog.Info)
+		syncLogger.Log("This Is Developement Log For Warning", irlog.Warning)
+		syncLogger.Log("This Is Developement Log For Error", irlog.Error)
+		syncLogger.Log("This Is Developement Log For Fatal", irlog.Fatal)
 	}
 }

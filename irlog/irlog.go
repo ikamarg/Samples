@@ -2,7 +2,6 @@ package irlog
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"runtime"
 	"strconv"
@@ -10,11 +9,29 @@ import (
 	"time"
 )
 
-// SynchronousLog asd
+// Severity levels
+const (
+	Debug   = 0
+	Info    = 1
+	Warning = 2
+	Error   = 3
+	Fatal   = 4
+)
+
+// SeverityLevel ..
+var SeverityLevel = [5]string{"Debug", "Info", "Warning", "Error", "Fatal"}
+
+// SynchronousLog ..
 const SynchronousLog LogModeType = 0
 
-// AsynchronousLog asdasd
+// SynchronousLogLevel ..
+const SynchronousLogLevel = 3
+
+// AsynchronousLog ..
 const AsynchronousLog LogModeType = 1
+
+// AsynchronousLogLevel ..
+const AsynchronousLogLevel = 0
 
 // LogModeType asdfq
 type LogModeType int
@@ -67,13 +84,13 @@ func (l *LogType) ShutDown() {
 func (l *LogType) Log(logText string, level int) {
 	_, file, no, ok := runtime.Caller(1)
 	if ok {
-		fmt.Printf("called from %s#%d\n", file, no)
-		logText = time.Now().Format("2006-01-02 15:04:05.000") + " " + file + " " + strconv.Itoa(no) + ": " + logText
+		// fmt.Printf("called from %s#%d\n", file, no)
+		logText = SeverityLevel[level] + ":: " + time.Now().Format("2006-01-02 15:04:05.000") + " " + file + " " + strconv.Itoa(no) + ": " + logText
 	}
 	l.Mutex.Lock()
 	defer l.Mutex.Unlock()
 
-	if level <= l.LogLevel == false {
+	if level < l.LogLevel {
 		return
 	}
 
@@ -101,7 +118,7 @@ func (l *LogType) Log(logText string, level int) {
 // check file size buffer
 func (l *LogType) checkFileSizeProd() {
 	if l.CurrentFileSize > l.MaxFileSize {
-		fmt.Println("created new file!!!")
+		// fmt.Println("created new file!!!")
 		l.Buffer.Flush()
 		l.File.Close()
 		moveFileToArchive(l.FilePath, l.ArchiveFolderPath)
